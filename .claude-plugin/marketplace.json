@@ -1,0 +1,46 @@
+{
+  "name": "chem-skills",
+  "description": "Chemistry skills for Claude: reliable compound information (PubChem, ChEMBL, RDKit) and native ChemDraw files.",
+  "owner": {
+    "name": "Lancifonins"
+  },
+  "plugins": [
+    {
+      "name": "chem-tools",
+      "source": "./chem-tools",
+      "description": "Compound identity (name, CAS, SMILES, CID), GHS hazards, experimental properties, vendors, substructure and bioactive-similarity search, RDKit descriptors, SDF/RXN/PNG output.",
+      "author": {
+        "name": "Lancifonins"
+      },
+      "category": "science",
+      "keywords": [
+        "chemistry",
+        "pubchem",
+        "chembl",
+        "rdkit",
+        "cas",
+        "ghs",
+        "cheminformatics"
+      ]
+    },
+    {
+      "name": "cdx-tools",
+      "source": "./cdx-tools",
+      "description": "Write native, editable ChemDraw .cdxml files: captioned structure grids, reaction schemes with arrows, reagents and conditions, multi-step routes. Reads .cdxml and .cdx.",
+      "author": {
+        "name": "Lancifonins"
+      },
+      "category": "science",
+      "keywords": [
+        "chemistry",
+        "chemdraw",
+        "cdxml",
+        "reaction scheme",
+        "rdkit"
+      ],
+      "dependencies": [
+        "chem-tools"
+      ]
+    }
+  ]
+}

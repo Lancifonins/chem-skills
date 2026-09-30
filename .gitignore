@@ -1,0 +1,15 @@
+# The original app this project grew out of (separate repository)
+chemskills/
+
+# Build output: attach dist/*.skill to releases instead of committing them
+dist/
+*.skill
+
+# Generated while running tools and tests
+exports/
+__pycache__/
+*.pyc
+.pytest_cache/
+*-workspace/
+
+.DS_Store

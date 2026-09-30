@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# chem-tools launcher: finds a Python 3.10+ with RDKit (installing it if needed), then runs chem.py.
+# Invoke as `bash <skill-dir>/scripts/chem ...` - that works even if the executable bit was lost.
+#
+#   bash chem <tool> '<json>'   run a tool          bash chem check   system check
+#   bash chem mcp               run as a local MCP server (stdio) for the Claude desktop app
+#
+# Python is chosen in this order: $CHEM_SKILLS_PYTHON -> uv (RDKit cached by uv) -> the shared
+# private venv -> a python3 that already has the packages -> build the private venv and
+# pip-install into it. The venv lives in ${XDG_CACHE_HOME:-~/.cache}/chem-skills/venv (shared with
+# the other chemistry skill), so the user's own Python environments are never modified.
+set -u
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+NAME="chem-tools"
+# Apps like the Claude desktop app start servers with a minimal PATH
+export PATH="$PATH:$HOME/.local/bin:$HOME/.cargo/bin:/opt/homebrew/bin:/usr/local/bin"
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/chem-skills"
+VENV="$CACHE/venv"
+
+PKGS=(rdkit requests pillow)
+IMPORTS="rdkit, requests, PIL"
+MCP_MODE=0
+if [ "${1:-}" = "mcp" ]; then
+  MCP_MODE=1
+  PKGS+=(mcp)
+  IMPORTS="$IMPORTS, mcp"
+fi
+ARGS=("$@")
+
+log() { echo "$NAME: $*" >&2; }
+fail() {
+  # In MCP mode stdout carries the protocol, so errors must go to stderr only
+  if [ "$MCP_MODE" = 1 ]; then log "ERROR: $1"; else printf '{"error": "%s"}\n' "$1"; fi
+  exit 1
+}
+py_ok() { "$1" -c 'import sys; assert sys.version_info >= (3, 10)' >/dev/null 2>&1; }
+has_deps() { py_ok "$1" && "$1" -c "import $IMPORTS" >/dev/null 2>&1; }
+run() { export CHEM_SKILLS_RUNNER="$1"; shift; exec "$@" "$DIR/chem.py" "${ARGS[@]+"${ARGS[@]}"}"; }
+
+if [ -n "${CHEM_SKILLS_PYTHON:-}" ]; then
+  has_deps "$CHEM_SKILLS_PYTHON" || fail "CHEM_SKILLS_PYTHON=$CHEM_SKILLS_PYTHON lacks Python 3.10+ with: ${PKGS[*]}."
+  run "CHEM_SKILLS_PYTHON" "$CHEM_SKILLS_PYTHON"
+fi
+
+if [ -z "${CHEM_SKILLS_NO_UV:-}" ] && UV="$(command -v uv 2>/dev/null)"; then
+  WITH=()
+  for p in "${PKGS[@]}"; do WITH+=(--with "$p"); done
+  run "uv" "$UV" run --quiet --no-project --python ">=3.10" "${WITH[@]}" python
+fi
+
+if [ -x "$VENV/bin/python" ] && has_deps "$VENV/bin/python"; then
+  run "private-venv" "$VENV/bin/python"
+fi
+
+for py in python3 python; do
+  p="$(command -v "$py" 2>/dev/null)" || continue
+  if has_deps "$p"; then run "system:$p" "$p"; fi
+done
+
+# Nothing usable yet: create (or top up) the private venv.
+if ! { [ -x "$VENV/bin/python" ] && py_ok "$VENV/bin/python"; }; then
+  BASE=""
+  for py in python3.13 python3.12 python3.11 python3.10 python3 python; do
+    p="$(command -v "$py" 2>/dev/null)" || continue
+    if py_ok "$p"; then BASE="$p"; break; fi
+  done
+  [ -n "$BASE" ] || fail "No Python 3.10+ found. Install uv (https://docs.astral.sh/uv/) or Python 3.10+, then retry."
+  log "creating a private Python environment in $VENV ..."
+  mkdir -p "$CACHE" || fail "Cannot create $CACHE."
+  rm -rf "$VENV"
+  "$BASE" -m venv "$VENV" >&2 || fail "Could not create a virtual environment with $BASE (on Debian/Ubuntu install python3-venv)."
+fi
+log "installing ${PKGS[*]} (one-time, about a minute) ..."
+"$VENV/bin/python" -m pip install --quiet --disable-pip-version-check "${PKGS[@]}" >&2 \
+  || fail "pip could not install ${PKGS[*]} (is PyPI reachable?). Install them yourself and set CHEM_SKILLS_PYTHON."
+has_deps "$VENV/bin/python" || fail "Installed ${PKGS[*]} but they still do not import."
+log "ready (RDKit $("$VENV/bin/python" -c 'import rdkit; print(rdkit.__version__)'))."
+run "private-venv (new)" "$VENV/bin/python"
