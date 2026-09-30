@@ -2,6 +2,7 @@
 name: cdx-tools
 description: Create and read native ChemDraw files. Writes editable .cdxml documents directly - single structures, captioned grids with bold compound numbers, and reaction schemes with real arrows, reagents above and conditions/yields below, including multi-step routes - from compound names, CAS numbers or SMILES. Converts SDF/MOL/SMILES/RXN files to ChemDraw, and extracts structures, reaction SMILES and text from .cdxml or binary .cdx files. Use this whenever the user wants something drawn "in ChemDraw", a .cdx/.cdxml file, a figure or scheme for a paper, SI or group meeting, a compound table with numbering, or asks what is in a ChemDraw file - even if they only say "draw" or "make a scheme".
 compatibility: Needs Python 3.10+. RDKit is installed automatically on first use (via uv, or into a private venv in ~/.cache/chem-skills), which needs PyPI access once. Compound names/CAS need pubchem.ncbi.nlm.nih.gov; SMILES work offline. In the Claude desktop app, run it as a local MCP server (references/mcp-setup.md). Works best alongside the chem-tools skill.
+license: MIT (see LICENSE in https://github.com/Lancifonins/chem-skills)
 metadata:
   version: "1.0.0"
 ---

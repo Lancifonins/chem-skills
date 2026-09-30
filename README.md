@@ -16,7 +16,7 @@ They work as a pair: chem-tools answers the chemistry, and cdx-tools draws it.
 `cdx-tools` pulls in `chem-tools` automatically:
 
 ```bash
-claude plugin marketplace add Lancifonins/REPO_NAME
+claude plugin marketplace add Lancifonins/chem-skills
 claude plugin install cdx-tools@chem-skills
 ```
 
@@ -94,3 +94,7 @@ A few conventions keep the two skills consistent:
 - Tools return JSON and raise `ToolError` for anything the user or Claude can fix. Any other
   exception is logged with a traceback as a `bug`.
 - Every new tool needs a test in `tests/`.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).

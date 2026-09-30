@@ -21,7 +21,8 @@
         "cas",
         "ghs",
         "cheminformatics"
-      ]
+      ],
+      "homepage": "https://github.com/Lancifonins/chem-skills"
     },
     {
       "name": "cdx-tools",
@@ -40,7 +41,8 @@
       ],
       "dependencies": [
         "chem-tools"
-      ]
+      ],
+      "homepage": "https://github.com/Lancifonins/chem-skills"
     }
   ]
 }

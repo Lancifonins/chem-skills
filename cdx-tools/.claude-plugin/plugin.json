@@ -5,6 +5,9 @@
   "author": {
     "name": "Lancifonins"
   },
+  "homepage": "https://github.com/Lancifonins/chem-skills",
+  "repository": "https://github.com/Lancifonins/chem-skills",
+  "license": "MIT",
   "keywords": [
     "chemistry",
     "chemdraw",

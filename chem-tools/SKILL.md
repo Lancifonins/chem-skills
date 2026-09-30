@@ -2,6 +2,7 @@
 name: chem-tools
 description: Chemistry lookup and structure toolkit backed by PubChem, ChEMBL and RDKit. Resolves compound names, CAS numbers, SMILES, InChIKeys and PubChem CIDs to each other, and returns molecular weight, formula, GHS hazards, experimental density/boiling point/melting point/flash point/solubility/pKa, and vendor availability. Also runs substructure (SMARTS) and bioactive-similarity searches, computes RDKit descriptors and Lipinski rules, reads SDF/MOL/CDXML files, and writes ChemDraw-ready SDF, reaction (.rxn) files and labelled structure images. Use this whenever a task names a specific chemical or reagent, asks for a CAS number, molecular weight or hazard, needs a mass-to-volume conversion, involves a structure drawing or reaction scheme, or asks to find compounds of a class - even if the user does not mention PubChem or tools, because recalled CAS numbers, masses and hazards are often wrong.
 compatibility: Needs Python 3.10+ and internet access to pubchem.ncbi.nlm.nih.gov and www.ebi.ac.uk. RDKit is installed automatically on first use (via uv, or into a private venv in ~/.cache/chem-skills), which needs PyPI access once. In the Claude desktop app, run it as a local MCP server instead (see references/mcp-setup.md).
+license: MIT (see LICENSE in https://github.com/Lancifonins/chem-skills)
 metadata:
   version: "1.0.0"
 ---
