@@ -4,6 +4,8 @@
     uv run --no-project --with pyyaml python tools/build.py            # all skills
     uv run --no-project --with pyyaml python tools/build.py cdx-tools  # one skill
 
+chem-suite is regenerated from chem-tools, cdx-tools and tools/suite/ on every build.
+
 Writes dist/<name>-<version>.skill (keep these as release history) and dist/<name>.skill
 (latest, the file to upload), and copies each SKILL.md metadata.version into the skill's
 .claude-plugin/plugin.json so the plugin marketplace serves the same version. Validation mirrors Anthropic's skill validator and adds checks
@@ -21,7 +23,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-SKILLS = ["chem-tools", "cdx-tools"]
+SKILLS = ["chem-tools", "cdx-tools", "chem-suite"]  # chem-suite is assembled from the other two
 DIST = ROOT / "dist"
 ALLOWED_KEYS = {"name", "description", "license", "allowed-tools", "metadata", "compatibility"}
 EXCLUDE_DIRS = {"__pycache__", "node_modules", "exports", "evals"}
@@ -116,6 +118,9 @@ def package(skill: Path, version: str) -> list[Path]:
 
 
 def main(names: list[str]) -> int:
+    if not names or "chem-suite" in names:
+        from assemble_suite import assemble
+        print(f"assembled chem-suite {assemble()} from chem-tools + cdx-tools")
     failed = False
     for name in names or SKILLS:
         skill = ROOT / name

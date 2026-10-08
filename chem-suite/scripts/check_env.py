@@ -13,14 +13,13 @@ import sys
 from pathlib import Path
 
 # ---- per-skill settings
-COMPANION = "cdx-tools"             # the other skill of the pair (None: no companion)
-COMPANION_LAUNCHER = "cdx"          # its scripts/<launcher>
-COMPANION_PROBE = "draw_structures"
-COMPANION_ROLE = ("chem-tools works fully without it; cdx-tools is only needed to write native "
-                  "ChemDraw (.cdxml) files")
+COMPANION = None                    # chem-suite contains both toolsets
+COMPANION_LAUNCHER = ""
+COMPANION_PROBE = ""
+COMPANION_ROLE = ""
 ENDPOINTS = {"pubchem": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244/property/Title/TXT",
              "chembl": "https://www.ebi.ac.uk/chembl/api/data/status.json"}
-CHECK_CHEMDRAW = False
+CHECK_CHEMDRAW = True
 # ----
 
 SKILL_DIR = Path(__file__).resolve().parent.parent

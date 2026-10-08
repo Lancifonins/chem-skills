@@ -4,7 +4,7 @@ description: Create and read native ChemDraw files. Writes editable .cdxml docum
 compatibility: Needs Python 3.10+. RDKit is installed automatically on first use (via uv, or into a private venv in ~/.cache/chem-skills), which needs PyPI access once. Compound names/CAS need pubchem.ncbi.nlm.nih.gov; SMILES work offline. In the Claude desktop app, run it as a local MCP server (references/mcp-setup.md). Works best alongside the chem-tools skill.
 license: MIT (see LICENSE in https://github.com/Lancifonins/chem-skills)
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # cdx-tools
@@ -83,7 +83,7 @@ through chem-tools: use its MCP tools if present, otherwise load that skill or r
 1. **Identify every compound first** with chem-tools `get_compound_info`. Check that the returned
    `name` is what the user meant, since short or trivial names can resolve to something else.
    Then draw from the verified SMILES, passing the name for the caption:
-   `{"structure": "<smiles from chem-tools>", "name": "<name the user used>", "label": "3a"}`.
+   `{"smiles": "<smiles from chem-tools>", "name": "<name the user used>", "label": "3a"}`.
    Drawing from SMILES also keeps the exact stereochemistry and skips a second lookup.
 2. **"Draw N compounds of class X"**: run chem-tools `search_substructure` (it has ready-made
    SMARTS), choose sensible hits, then `draw_structures` with their SMILES and names.
@@ -103,16 +103,20 @@ through chem-tools: use its MCP tools if present, otherwise load that skill or r
 Each compound is a name, CAS number or SMILES string, or an object for full control:
 
 ```json
-{"structure": "C[C@H](O)C(=O)O", "label": "3a", "name": "(S)-lactic acid"}
+{"smiles": "C[C@H](O)C(=O)O", "label": "3a", "name": "(S)-lactic acid"}
 ```
 
 - `label` replaces the automatic bold number (use it for "3a", "S1", "ent-7").
 - `name` sets the caption text. Otherwise the caption uses the input as written, or a PubChem
   title for SMILES inputs.
-- Prefer SMILES for anything unusual, stereodefined or not in PubChem: SMILES is drawn exactly as
-  given, while names depend on PubChem's interpretation. Write the stereo into the SMILES (`@`/`@@`,
-  `/`/`\`) and it becomes wedges and hashes.
+- Pass verified structures as `{"smiles": "..."}`: drawn exactly as given, with no guessing. Write
+  the stereo into the SMILES (`@`/`@@`, `/`/`\`) and it becomes wedges and hashes.
+- Plain strings are auto-detected. Reagent abbreviations (NBS, DMAP, ...) resolve to the reagent, and
+  ambiguous inputs (`CO`, `CBS`, unknown all-letter strings with B or P) are refused with an
+  explanation. Check each compound's `interpreted_as` and the `notes` list in the result.
 - Unresolvable compounds are listed under `failed` and the rest are still drawn. Tell the user.
+- Files are never overwritten: a second drawing with the same `filename` gets a -2, -3... suffix,
+  so always report the returned path. Pass `"overwrite": true` to deliberately replace a file.
 
 ## Drawing reaction schemes well
 

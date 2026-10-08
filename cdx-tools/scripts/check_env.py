@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 # ---- per-skill settings
-COMPANION = "chem-tools"            # the other skill of the pair
+COMPANION = "chem-tools"            # the other skill of the pair (None: no companion)
 COMPANION_LAUNCHER = "chem"         # its scripts/<launcher>
 COMPANION_PROBE = "get_compound_info"
 COMPANION_ROLE = ("cdx-tools still works (it has a built-in PubChem name lookup) but cannot fetch "
@@ -136,12 +136,13 @@ def check() -> dict:
         report["export_dir"] = {"path": str(export_dir), "writable": False, "error": str(e)}
         problems.append(f"Cannot write to {export_dir}; set CHEM_EXPORT_DIR to a writable folder.")
 
-    key = COMPANION.replace("-", "_")
-    report[key] = _companion()
-    if not report[key]["found"]:
-        warnings.append(report[key]["message"])
-    elif not report[key]["runs"]:
-        warnings.append(f"{COMPANION} was found but failed to run; see {key}.error.")
+    if COMPANION:  # None in chem-suite, which contains both toolsets
+        key = COMPANION.replace("-", "_")
+        report[key] = _companion()
+        if not report[key]["found"]:
+            warnings.append(report[key]["message"])
+        elif not report[key]["runs"]:
+            warnings.append(f"{COMPANION} was found but failed to run; see {key}.error.")
 
     if CHECK_CHEMDRAW:
         report["chemdraw"] = _chemdraw()

@@ -1,6 +1,6 @@
 {
   "name": "cdx-tools",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Write native, editable ChemDraw .cdxml files: captioned structure grids, reaction schemes with arrows, reagents and conditions, multi-step routes. Reads .cdxml and .cdx.",
   "author": {
     "name": "Lancifonins"

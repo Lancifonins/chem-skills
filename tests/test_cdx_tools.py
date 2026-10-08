@@ -2,6 +2,7 @@ import json
 import re
 
 import pytest
+from conftest import skill_version
 from rdkit import Chem
 
 TESTOSTERONE = "C[C@]12CC[C@H]3[C@@H](CCC4=CC(=O)CC[C@]34C)[C@@H]1CC[C@@H]2O"
@@ -14,7 +15,7 @@ def canon(smiles: str) -> str:
 
 
 def test_version_and_check(cdx):
-    assert json.loads(cdx.raw("version").stdout) == {"skill": "cdx-tools", "version": "1.0.0"}
+    assert json.loads(cdx.raw("version").stdout) == {"skill": cdx.name, "version": skill_version(cdx.name)}
     report = json.loads(cdx.raw("check").stdout)
     assert report["ready"] and report["rdkit"]["ok"], report
 
@@ -66,3 +67,12 @@ def test_draw_by_name(cdx):
     out = cdx.ok("draw_structures", {"compounds": ["caffeine"], "caption": "name_cas"})
     assert out["compounds"][0]["formula"] == "C8H10N4O2"
     assert "caffeine\nCAS 58-08-2" in cdx.ok("read_chemdraw", {"path": "exports/structures.cdxml"})["text"]
+
+
+def test_suite_has_every_tool(tmp_path):
+    from conftest import Skill
+    names = lambda skill: {line.split(":")[0] for line in Skill(skill, tmp_path).raw("list").stdout.splitlines()
+                           if line and not line.startswith(" ") and ":" in line}
+    assert names("chem-suite") == names("chem-tools") | names("cdx-tools")
+    report = json.loads(Skill("chem-suite", tmp_path).raw("check").stdout)
+    assert report["ready"] and "chembl" in report["network"] and "chemdraw" in report

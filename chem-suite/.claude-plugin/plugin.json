@@ -1,0 +1,23 @@
+{
+  "name": "chem-suite",
+  "version": "1.1.0",
+  "description": "All-in-one chemistry toolkit: compound information, hazards, properties and searches (PubChem, ChEMBL, RDKit) plus native ChemDraw .cdxml figures and reaction schemes.",
+  "author": {
+    "name": "Lancifonins"
+  },
+  "homepage": "https://github.com/Lancifonins/chem-skills",
+  "repository": "https://github.com/Lancifonins/chem-skills",
+  "license": "MIT",
+  "keywords": [
+    "cas",
+    "cdxml",
+    "chembl",
+    "chemdraw",
+    "cheminformatics",
+    "chemistry",
+    "ghs",
+    "pubchem",
+    "rdkit",
+    "reaction scheme"
+  ]
+}

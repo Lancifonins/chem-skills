@@ -2,7 +2,15 @@
 
 Generated from `scripts/tool_schemas.py`. `scripts/cdx schema <tool>` prints the raw JSON schema.
 
-A *compound* is a string (name, CAS number or SMILES) or `{"structure": ..., "label": "3a", "name": "..."}`.
+A *compound* is a string (name, CAS number, reagent abbreviation or SMILES, auto-detected) or an object:
+`{"smiles": "..."}` (exact, never guessed; prefer this) or `{"structure": "...", "identifier_type": "name"}`,
+each with optional `"label": "3a"` (bold compound number) and `"name": "..."` (caption text).
+
+Outputs list each compound's `interpreted_as`, and a `notes` list explains any input that was read
+in a non-obvious way (e.g. 'NBS' as N-bromosuccinimide). Ambiguous inputs such as `CO` (methanol or
+carbon monoxide) or `CBS` (which enantiomer?) are refused with an explanation instead of guessed.
+A `warnings` list reports any text characters ChemDraw's fonts cannot show. Files are never
+overwritten unless `overwrite` is true: a -2, -3... suffix is added instead.
 
 ## draw_structures
 
@@ -16,6 +24,7 @@ Draw one or more compounds into a native, editable ChemDraw .cdxml file, laid ou
 | `caption` | string | no | Caption lines under each structure: any of 'number', 'name', 'cas', 'formula', 'mw' joined by '_' (e.g. 'number_name'), or 'none'. |
 | `number_start` | integer | no | First automatic compound number. |
 | `filename` | string | no | Output file stem; '.cdxml' is added. |
+| `overwrite` | boolean | no | Replace an existing file with the same name. By default a -2, -3... suffix is added instead, so earlier files are never lost. |
 | `separate_files` | boolean | no |  |
 
 **Output:** `path` (or `paths` with `separate_files`), `layout`, `compounds` (input, SMILES, formula, label if custom) and `failed`.
@@ -36,6 +45,7 @@ Draw a reaction scheme into a native ChemDraw .cdxml file: structures joined by 
 | `number_start` | integer | no |  |
 | `reagents_as` | string | no | 'text' writes reagent names (formulas get subscripts); 'structures' draws them. One of: `text`, `structures`. |
 | `filename` | string | no | Output file stem; '.cdxml' is added. |
+| `overwrite` | boolean | no | Replace an existing file with the same name. By default a -2, -3... suffix is added instead, so earlier files are never lost. |
 
 **Output:** `path`, `steps`, `reaction_smiles` (one per step, reagents omitted), `compounds` (per stage) and `failed`. The file holds ChemDraw reaction-step metadata linking reactants, products, arrow and the objects above/below it, so ChemDraw's reaction tools recognise the scheme.
 
@@ -50,6 +60,7 @@ Convert a structure file into a ChemDraw .cdxml document: .sdf/.mol/.smi become 
 | `columns` | integer | no |  |
 | `caption` | string | no | Caption lines under each structure: any of 'number', 'name', 'cas', 'formula', 'mw' joined by '_' (e.g. 'number_name'), or 'none'. |
 | `filename` | string | no | Output file stem; '.cdxml' is added. |
+| `overwrite` | boolean | no | Replace an existing file with the same name. By default a -2, -3... suffix is added instead, so earlier files are never lost. |
 
 **Output:** Same as `draw_structures` for structure files, or `draw_reaction` for .rxn files (agents are drawn as structures above the arrow). SDF `_Name` titles and names in the second column of a .smi file become captions.
 

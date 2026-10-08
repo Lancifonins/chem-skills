@@ -1,6 +1,7 @@
 import json
 
 import pytest
+from conftest import skill_version
 
 ASPIRIN = "CC(=O)Oc1ccccc1C(=O)O"
 MOLFILE_ETHANOL = """ethanol
@@ -18,7 +19,7 @@ $$$$
 
 
 def test_version_and_check(chem):
-    assert json.loads(chem.raw("version").stdout) == {"skill": "chem-tools", "version": "1.0.0"}
+    assert json.loads(chem.raw("version").stdout) == {"skill": chem.name, "version": skill_version(chem.name)}
     report = json.loads(chem.raw("check").stdout)
     assert report["ready"] and report["rdkit"]["ok"], report
 

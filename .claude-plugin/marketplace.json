@@ -43,6 +43,26 @@
         "chem-tools"
       ],
       "homepage": "https://github.com/Lancifonins/chem-skills"
+    },
+    {
+      "name": "chem-suite",
+      "source": "./chem-suite",
+      "description": "All-in-one: every chem-tools and cdx-tools tool in one skill (compound information, hazards, properties, searches, and native ChemDraw .cdxml figures and schemes). Install this or the two separate skills, not both.",
+      "author": {
+        "name": "Lancifonins"
+      },
+      "category": "science",
+      "keywords": [
+        "chemistry",
+        "chemdraw",
+        "cdxml",
+        "pubchem",
+        "chembl",
+        "rdkit",
+        "cas",
+        "ghs"
+      ],
+      "homepage": "https://github.com/Lancifonins/chem-skills"
     }
   ]
 }

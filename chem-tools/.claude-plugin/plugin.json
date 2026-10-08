@@ -1,6 +1,6 @@
 {
   "name": "chem-tools",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Compound identity (name, CAS, SMILES, CID), GHS hazards, experimental properties, vendors, substructure and bioactive-similarity search, RDKit descriptors, SDF/RXN/PNG output.",
   "author": {
     "name": "Lancifonins"

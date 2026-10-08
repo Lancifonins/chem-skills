@@ -8,22 +8,26 @@ Claude reliable chemistry tools:
 | **chem-tools** | Compound identity (name ⇄ CAS ⇄ SMILES ⇄ CID), GHS hazards, experimental properties, vendors, substructure and bioactive-similarity search, RDKit descriptors, SDF/RXN/PNG output | PubChem, ChEMBL, RDKit |
 | **cdx-tools** | Writes native, editable ChemDraw `.cdxml` files (captioned structure grids, reaction schemes with arrows, reagents and conditions, multi-step routes) and reads `.cdxml`/`.cdx` | RDKit (+ PubChem for names) |
 
-They work as a pair: chem-tools answers the chemistry, and cdx-tools draws it.
+They work as a pair: chem-tools answers the chemistry, and cdx-tools draws it. **chem-suite**
+combines both in a single skill with every tool from each, for people who want one install. Install
+either chem-suite or the pair, not both, or Claude sees every tool twice.
 
 ## Install
 
-**Claude Code (recommended):** this repository is a plugin marketplace. Add it once, then install;
-`cdx-tools` pulls in `chem-tools` automatically:
+**Claude Code (recommended):** this repository is a plugin marketplace. Add it once, then install
+either the all-in-one skill or the pair (`cdx-tools` pulls in `chem-tools` automatically):
 
 ```bash
 claude plugin marketplace add Lancifonins/chem-skills
-claude plugin install cdx-tools@chem-skills
+claude plugin install chem-suite@chem-skills      # all-in-one
+# or: claude plugin install cdx-tools@chem-skills   # the pair
 ```
 
 Inside a session, `/plugin` lets you browse the `chem-skills` marketplace and install from it.
 `claude plugin update cdx-tools@chem-skills` fetches new versions.
 
-**Other ways:** download `chem-tools.skill` and `cdx-tools.skill` from the latest release, then:
+**Other ways:** download `chem-suite.skill` (or `chem-tools.skill` + `cdx-tools.skill`) from the
+latest release, then:
 
 - **claude.ai / Claude apps:** Settings → Capabilities → Skills → upload each `.skill` file.
   Code execution must be enabled. The skills install RDKit from PyPI on first use and query
@@ -60,6 +64,9 @@ the maintainer or paste it into an issue. Set `CHEM_SKILLS_DEBUG=1` to log succe
 .claude-plugin/    marketplace.json: lists both skills as installable plugins
 chem-tools/        skill: SKILL.md, scripts/, references/, .claude-plugin/plugin.json
 cdx-tools/         skill: SKILL.md, scripts/, references/, .claude-plugin/plugin.json
+chem-suite/        GENERATED all-in-one skill; never edit it directly
+tools/suite/       chem-suite's own files (SKILL.md, tool registry, MCP server, setup guide)
+tools/assemble_suite.py  builds chem-suite/ from chem-tools/, cdx-tools/ and tools/suite/
 tests/             end-to-end tests (each tool run through its launcher, as Claude runs it)
 tools/build.py     validate + package into dist/
 dist/              built .skill files (upload these)
@@ -88,7 +95,11 @@ uv run --no-project --with pyyaml python tools/build.py
 `.claude-plugin/plugin.json`, so bump the version in SKILL.md only. Check the marketplace with
 `claude plugin validate --strict .`.
 
-A few conventions keep the two skills consistent:
+chem-suite is assembled on every build: tool code comes unchanged from chem-tools and cdx-tools,
+so fix bugs there and rebuild. Its version is the higher of the two skills' versions. The tests
+run every chem-tools and cdx-tools test against chem-suite as well.
+
+A few conventions keep the skills consistent:
 - `scripts/diagnostics.py`, `scripts/check_env.py` (apart from its settings block),
   `scripts/pubchem.py` and the launcher logic are shared, so change them in both skills.
 - Tools return JSON and raise `ToolError` for anything the user or Claude can fix. Any other

@@ -4,7 +4,7 @@ description: Chemistry lookup and structure toolkit backed by PubChem, ChEMBL an
 compatibility: Needs Python 3.10+ and internet access to pubchem.ncbi.nlm.nih.gov and www.ebi.ac.uk. RDKit is installed automatically on first use (via uv, or into a private venv in ~/.cache/chem-skills), which needs PyPI access once. In the Claude desktop app, run it as a local MCP server instead (see references/mcp-setup.md).
 license: MIT (see LICENSE in https://github.com/Lancifonins/chem-skills)
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # chem-tools
@@ -79,10 +79,12 @@ check-digit validated.
 `include` section costs extra requests, so "what's the CAS of X" needs nothing extra, while
 "I'm about to use X" warrants `["safety"]`. For several compounds, run one call per compound.
 
-**Check the resolved name.** Identifiers are auto-detected: a space-free string that parses as
-SMILES is treated as SMILES (`CO` is methanol), and PubChem names are case-insensitive (the name
-`CO` is cobalt). If the returned `name` isn't what the user meant, retry with `identifier_type`
-set explicitly or use a more specific name.
+**Check how each input was read.** Results include `interpreted_as`, plus a `note` when it matters.
+Reagent abbreviations (NBS, DMAP, HATU, DIBAL, ...) resolve to the reagent even though many are
+also valid SMILES. Ambiguous inputs (`CO`, `CN`, `CBS`, `BINAP`, unknown all-letter strings with B
+or P) are refused with an explanation: follow it rather than retrying the same string. A note on a
+short name says which compound PubChem matched, so confirm it's the one the user meant. Use
+`identifier_type` to force a reading.
 
 **Report safety data honestly.** GHS lines are aggregated from many depositors, and the percentage
 is the share reporting that hazard. Lead with the signal word and the high-share H-statements, and

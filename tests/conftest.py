@@ -8,7 +8,14 @@ import pytest
 import requests
 
 ROOT = Path(__file__).resolve().parent.parent
-LAUNCHERS = {"chem-tools": ROOT / "chem-tools/scripts/chem", "cdx-tools": ROOT / "cdx-tools/scripts/cdx"}
+LAUNCHERS = {"chem-tools": ROOT / "chem-tools/scripts/chem", "cdx-tools": ROOT / "cdx-tools/scripts/cdx",
+             "chem-suite": ROOT / "chem-suite/scripts/chem"}
+
+
+def skill_version(name: str) -> str:
+    """metadata.version from the skill's SKILL.md, so tests don't need editing on every release."""
+    import re
+    return re.search(r'^\s*version:\s*"([\d.]+)"', (ROOT / name / "SKILL.md").read_text(), re.M).group(1)
 
 
 class Skill:
@@ -47,14 +54,15 @@ class Skill:
         return [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
 
 
-@pytest.fixture
-def chem(tmp_path):
-    return Skill("chem-tools", tmp_path)
+# chem-suite contains both toolsets, so every chem-tools and cdx-tools test also runs against it
+@pytest.fixture(params=["chem-tools", "chem-suite"])
+def chem(request, tmp_path):
+    return Skill(request.param, tmp_path)
 
 
-@pytest.fixture
-def cdx(tmp_path):
-    return Skill("cdx-tools", tmp_path)
+@pytest.fixture(params=["cdx-tools", "chem-suite"])
+def cdx(request, tmp_path):
+    return Skill(request.param, tmp_path)
 
 
 def _pubchem_up() -> bool:
