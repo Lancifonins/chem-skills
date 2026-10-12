@@ -32,6 +32,15 @@ bash <skill-dir>/scripts/chem schema <tool>           # exact JSON input schema
 The output is JSON on stdout. Exit code 1 means it holds `{"error": ...}`, so read the message and
 adjust rather than retrying blindly.
 
+**If `scripts/chem` is missing next to this SKILL.md**, this copy of the skill is incomplete:
+some Claude apps sync only the SKILL.md of a user's skills. Don't improvise, and don't use other or
+older chemistry scripts you find on disk. Look for a complete copy instead, e.g.
+`ls ~/.claude/skills/chem-suite/scripts/chem`. Use it only if its `version` command reports the same or a newer
+version as this file's `metadata.version`. If there is no complete copy, tell the user the
+installed skill is missing its scripts and how to fix it: in Claude Code, run
+`claude plugin install chem-suite@chem-skills`, or put the full skill folder (unzipped from the `.skill`
+file) in `~/.claude/skills/chem-suite`.
+
 ## Step 0: system check (once per session)
 
 Run `check` before the first tool call. The launcher finds a Python 3.10+ with RDKit and installs it

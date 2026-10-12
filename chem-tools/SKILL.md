@@ -4,7 +4,7 @@ description: Chemistry lookup and structure toolkit backed by PubChem, ChEMBL an
 compatibility: Needs Python 3.10+ and internet access to pubchem.ncbi.nlm.nih.gov and www.ebi.ac.uk. RDKit is installed automatically on first use (via uv, or into a private venv in ~/.cache/chem-skills), which needs PyPI access once. In the Claude desktop app, run it as a local MCP server instead (see references/mcp-setup.md).
 license: MIT (see LICENSE in https://github.com/Lancifonins/chem-skills)
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # chem-tools
@@ -27,6 +27,15 @@ bash <skill-dir>/scripts/chem schema <tool>           # exact JSON input schema
 
 The output is JSON on stdout. Exit code 1 means it contains `{"error": ...}`, so read the message
 and adjust rather than retrying blindly.
+
+**If `scripts/chem` is missing next to this SKILL.md**, this copy of the skill is incomplete:
+some Claude apps sync only the SKILL.md of a user's skills. Don't improvise, and don't use other or
+older chemistry scripts you find on disk. Look for a complete copy instead, e.g.
+`ls ~/.claude/skills/chem-tools/scripts/chem`. Use it only if its `version` command reports the same or a newer
+version as this file's `metadata.version`. chem-suite contains every chem-tools tool, so `bash ~/.claude/skills/chem-suite/scripts/chem` works too. If there is no complete copy, tell the user the
+installed skill is missing its scripts and how to fix it: in Claude Code, run
+`claude plugin install chem-tools@chem-skills`, or put the full skill folder (unzipped from the `.skill`
+file) in `~/.claude/skills/chem-tools`.
 
 ## Step 0: system check (once per session)
 

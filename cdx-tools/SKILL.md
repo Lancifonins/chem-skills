@@ -4,7 +4,7 @@ description: Create and read native ChemDraw files. Writes editable .cdxml docum
 compatibility: Needs Python 3.10+. RDKit is installed automatically on first use (via uv, or into a private venv in ~/.cache/chem-skills), which needs PyPI access once. Compound names/CAS need pubchem.ncbi.nlm.nih.gov; SMILES work offline. In the Claude desktop app, run it as a local MCP server (references/mcp-setup.md). Works best alongside the chem-tools skill.
 license: MIT (see LICENSE in https://github.com/Lancifonins/chem-skills)
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # cdx-tools
@@ -33,6 +33,15 @@ bash <skill-dir>/scripts/cdx schema <tool>                      # exact JSON inp
 ```
 
 The output is JSON. Exit code 1 means it holds `{"error": ...}`.
+
+**If `scripts/cdx` is missing next to this SKILL.md**, this copy of the skill is incomplete:
+some Claude apps sync only the SKILL.md of a user's skills. Don't improvise, and don't use other or
+older chemistry scripts you find on disk. Look for a complete copy instead, e.g.
+`ls ~/.claude/skills/cdx-tools/scripts/cdx`. Use it only if its `version` command reports the same or a newer
+version as this file's `metadata.version`. chem-suite contains every cdx-tools tool, so `bash ~/.claude/skills/chem-suite/scripts/chem` works too. If there is no complete copy, tell the user the
+installed skill is missing its scripts and how to fix it: in Claude Code, run
+`claude plugin install cdx-tools@chem-skills`, or put the full skill folder (unzipped from the `.skill`
+file) in `~/.claude/skills/cdx-tools`.
 
 ## Step 0: system check (once per session)
 

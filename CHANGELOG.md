@@ -2,6 +2,12 @@
 
 Versions are per skill (`metadata.version` in each SKILL.md).
 
+## chem-tools 1.1.1 / cdx-tools 1.1.1 / chem-suite 1.1.1
+
+- If a skill's `scripts/` folder is missing (some Claude apps sync only the SKILL.md of a user's
+  skills), Claude now looks for a complete copy of the same version, or tells the user how to fix the
+  install. It no longer improvises or falls back to older scripts found elsewhere on disk.
+
 ## chem-tools 1.1.0 / cdx-tools 1.1.0 / chem-suite 1.1.0
 
 Fixes for problems found in real use: inputs are never silently misread, files are never silently
