@@ -4,7 +4,7 @@ description: Create and read native ChemDraw files. Writes editable .cdxml docum
 compatibility: Needs Python 3.10+. RDKit is installed automatically on first use (via uv, or into a private venv in ~/.cache/chem-skills), which needs PyPI access once. Compound names/CAS need pubchem.ncbi.nlm.nih.gov; SMILES work offline. In the Claude desktop app, run it as a local MCP server (references/mcp-setup.md). Works best alongside the chem-tools skill.
 license: MIT (see LICENSE in https://github.com/Lancifonins/chem-skills)
 metadata:
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # cdx-tools

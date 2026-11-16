@@ -26,8 +26,9 @@ ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ["chem-tools", "cdx-tools", "chem-suite"]  # chem-suite is assembled from the other two
 DIST = ROOT / "dist"
 ALLOWED_KEYS = {"name", "description", "license", "allowed-tools", "metadata", "compatibility"}
-EXCLUDE_DIRS = {"__pycache__", "node_modules", "exports", "evals"}
-EXCLUDE_FILES = {".DS_Store"}
+EXCLUDE_DIRS = {"__pycache__", "node_modules", "exports", "evals",
+                ".claude-plugin"}  # plugin manifests serve the marketplace, not uploaded skills
+EXCLUDE_FILES = {".DS_Store", "GENERATED.txt"}  # GENERATED.txt is a note for maintainers
 EXECUTABLE = {"chem", "cdx", "chem.py", "cdx.py"}
 
 
@@ -114,7 +115,25 @@ def package(skill: Path, version: str) -> list[Path]:
                 info.external_attr = (0o100000 | mode) << 16
                 info.compress_type = zipfile.ZIP_DEFLATED
                 z.writestr(info, f.read_bytes())
+    check_package(outputs[0], skill.name)
     return outputs
+
+
+def check_package(path: Path, name: str) -> None:
+    """A .skill must be a plain skill: one top-level folder with SKILL.md, and no plugin files."""
+    with zipfile.ZipFile(path) as z:
+        names = z.namelist()
+    problems = []
+    if f"{name}/SKILL.md" not in names:
+        problems.append("SKILL.md is not at the top of the skill folder")
+    if any(not n.startswith(f"{name}/") for n in names):
+        problems.append("files outside the skill folder")
+    leaked = [n for n in names if "/.claude-plugin/" in n or n.endswith("plugin.json") or n.endswith("marketplace.json")]
+    if leaked:
+        problems.append(f"plugin files in the package: {leaked}")
+    if problems:
+        path.unlink()
+        raise SystemExit(f"{path.name} is not an uploadable skill: " + "; ".join(problems))
 
 
 def main(names: list[str]) -> int:

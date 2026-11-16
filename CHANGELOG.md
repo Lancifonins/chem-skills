@@ -2,6 +2,17 @@
 
 Versions are per skill (`metadata.version` in each SKILL.md).
 
+## chem-tools 1.1.2 / cdx-tools 1.1.2 / chem-suite 1.1.2
+
+- **Copes with PubChem's busy spells.** PubChem often answers "503 ServerBusy" for short periods.
+  Requests now retry up to 6 times with short, growing pauses (about 30 s at most) instead of three
+  30-second waits. If PubChem is still busy, the tools say so plainly instead of showing a raw
+  connection error.
+- `image_to_structure` checks that the input is an image before loading DECIMER, and reports DECIMER
+  load or recognition failures as clear messages instead of internal errors.
+- Uploadable `.skill` packages no longer contain the plugin manifest (`.claude-plugin/`) or the
+  maintainer note `GENERATED.txt`. They are plain skills: SKILL.md, scripts/, references/, LICENSE.
+
 ## chem-tools 1.1.1 / cdx-tools 1.1.1 / chem-suite 1.1.1
 
 - If a skill's `scripts/` folder is missing (some Claude apps sync only the SKILL.md of a user's

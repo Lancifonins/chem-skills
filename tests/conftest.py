@@ -65,12 +65,18 @@ def cdx(request, tmp_path):
     return Skill(request.param, tmp_path)
 
 
-def _pubchem_up() -> bool:
-    try:
-        return requests.get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/702/property/Title/TXT",
-                            timeout=8).ok
-    except requests.RequestException:
-        return False
+def _pubchem_up(attempts: int = 6) -> bool:
+    """PubChem often answers 503 ServerBusy under load, so one failed probe doesn't mean it's down."""
+    import time
+    for i in range(attempts):
+        try:
+            if requests.get("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/702/property/Title/TXT",
+                            timeout=8).ok:
+                return True
+        except requests.RequestException:
+            pass
+        time.sleep(3)
+    return False
 
 
 PUBCHEM_UP = _pubchem_up()

@@ -459,13 +459,29 @@ def export_reaction(reactants: list[str], products: list[str], reagents: list[st
 
 def image_to_structure(image_path: str, lookup: bool = True) -> dict:
     """Optical structure recognition with DECIMER (optional heavy dependency)."""
+    p = _input_path(image_path)
+    try:  # reject non-images before loading DECIMER's large model
+        from PIL import Image
+        with Image.open(p) as img:
+            img.verify()
+    except ImportError:
+        pass  # Pillow missing: let DECIMER report the problem
+    except Exception:
+        raise ToolError(f"'{image_path}' is not a readable image. Give a PNG, JPEG, TIFF or similar "
+                        "image file of a chemical structure.") from None
     try:
         from DECIMER import predict_SMILES
     except ImportError:
         raise ToolError("DECIMER is not installed (pip install decimer). Claude can also read "
-                        "structure images directly and pass a SMILES to other tools.")
-    p = _input_path(image_path)
-    smiles = predict_SMILES(str(p))
+                        "structure images directly and pass a SMILES to other tools.") from None
+    except Exception as e:  # e.g. a broken TensorFlow install
+        raise ToolError(f"DECIMER is installed but failed to load ({type(e).__name__}: {e}). Claude can "
+                        "also read structure images directly and pass a SMILES to other tools.") from None
+    try:
+        smiles = predict_SMILES(str(p))
+    except Exception as e:
+        raise ToolError(f"DECIMER could not read a structure from '{image_path}' "
+                        f"({type(e).__name__}: {e}).") from None
     mol = Chem.MolFromSmiles(smiles or "")
     if mol is None:
         raise ToolError(f"DECIMER produced an invalid structure: {smiles!r}")

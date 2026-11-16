@@ -108,3 +108,8 @@ def test_text_fits_chemdraw_fonts(cdx):
     assert '<s font="7" size="10" face="0">a</s>' in xml                # α via the Symbol font
     assert "-78 °C" in xml and "-&gt;" in xml
     assert out["warnings"] == ["'✓' (U+2713) cannot be shown in ChemDraw's text font; written as '?'."]
+
+
+def test_image_tool_rejects_non_images_clearly(chem):
+    (chem.workdir / "not_an_image.png").write_text("this is not a PNG")
+    assert "is not a readable image" in chem.error("image_to_structure", {"image_path": "not_an_image.png"})

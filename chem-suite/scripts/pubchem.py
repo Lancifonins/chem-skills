@@ -34,15 +34,19 @@ class ToolError(Exception):
 
 
 _session = requests.Session()
-_session.headers["User-Agent"] = "chem-skill/1.0 (research assistant)"
+_session.headers["User-Agent"] = "chem-skills (Claude skill; https://github.com/Lancifonins/chem-skills)"
 _session.mount(
     "https://",
     HTTPAdapter(
+        # PubChem answers "503 ServerBusy" in short spells that alternate request by request, with a
+        # Retry-After of 30 s. Several quick retries (0.5, 1, 2, 4, 8, 16 s; about 30 s at most)
+        # ride these out far better than waiting the suggested 30 s three times.
         max_retries=Retry(
-            total=3,
-            backoff_factor=1.0,
+            total=6,
+            backoff_factor=0.5,
             status_forcelist=(429, 500, 502, 503, 504),
             allowed_methods=("GET", "POST"),
+            respect_retry_after_header=False,
         )
     ),
 )
@@ -64,10 +68,14 @@ def _throttle():
 def request(method: str, url: str, **kwargs) -> requests.Response:
     """HTTP call with throttling; 404 is returned (callers treat it as 'not found')."""
     _throttle()
+    host = url.split("/")[2]
     try:
         res = _session.request(method, url, timeout=TIMEOUT, **kwargs)
+    except requests.exceptions.RetryError as e:
+        raise ToolError(f"{host} is overloaded right now: it kept answering 'server busy' after several "
+                        "retries. Try again in a minute or two; these spells are usually short.") from e
     except requests.RequestException as e:
-        raise ToolError(f"Network error contacting {url.split('/')[2]}: {e}") from e
+        raise ToolError(f"Network error contacting {host}: {e}") from e
     if res.status_code >= 400 and res.status_code != 404:
         detail = ""
         try:

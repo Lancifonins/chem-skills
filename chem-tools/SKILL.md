@@ -4,7 +4,7 @@ description: Chemistry lookup and structure toolkit backed by PubChem, ChEMBL an
 compatibility: Needs Python 3.10+ and internet access to pubchem.ncbi.nlm.nih.gov and www.ebi.ac.uk. RDKit is installed automatically on first use (via uv, or into a private venv in ~/.cache/chem-skills), which needs PyPI access once. In the Claude desktop app, run it as a local MCP server instead (see references/mcp-setup.md).
 license: MIT (see LICENSE in https://github.com/Lancifonins/chem-skills)
 metadata:
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # chem-tools
